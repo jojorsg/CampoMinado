@@ -29,7 +29,7 @@ public class Tabuleiro {
             campos.parallelStream()
                     .filter(c -> c.getLinha() == linha && c.getColuna() == coluna)
                     .findFirst()
-                    .ifPresent(c -> c.abrir());
+                    .ifPresent(Campo::abrir);
         } catch (ExplosaoException e) {
             campos.forEach(c -> c.setAberto(true));
             throw e;
@@ -37,10 +37,10 @@ public class Tabuleiro {
     }
 
     public void alternarMarcacao(int linha, int coluna) {
-        campos.parallelStream()
+        campos.stream()
                 .filter(c -> c.getLinha() == linha && c.getColuna() == coluna)
                 .findFirst()
-                .ifPresent(c -> c.alternarMarcacao());
+                .ifPresent(Campo::alternarMarcacao);
     }
 
     private void gerarCampos() {
@@ -54,14 +54,15 @@ public class Tabuleiro {
     private void associarOsVizinhos() {
         for(Campo c1: campos) {
             for(Campo c2: campos) {
-                c1.adicionarVizinho(c2);
+                    c1.adicionarVizinho(c2);
             }
         }
     }
 
+
     private void sortearMinas() {
         long minasArmadas = 0;
-        Predicate<Campo> minado = c -> c.isMinado();
+        Predicate<Campo> minado = Campo::isMinado;
         do {
             int aleatorio = (int) (Math.random() * campos.size());
             campos.get(aleatorio).minar();
@@ -70,11 +71,11 @@ public class Tabuleiro {
     }
 
     public boolean objetivoAlcancado() {
-        return campos.stream().allMatch(c -> c.objetivoAlcancado());
+        return campos.stream().allMatch(Campo::objetivoAlcancado);
     }
 
     public void reiniciar() {
-        campos.stream().forEach(c -> c.reiniciar());
+        campos.forEach(Campo::reiniciar);
         sortearMinas();
     }
 
